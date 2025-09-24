@@ -1,175 +1,206 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carta para ti</title>
-    
-    <!-- Open Graph Tags para compartir en WhatsApp y otras redes sociales -->
-    <meta property="og:title" content="¡Una carta para ti!"/>
-    <meta property="og:description" content="Abre este mensaje especial para descubrir una sorpresa."/>
-    <meta property="og:image" content="https://j.inglucas.com.co/galeri/corazon.gif"/>
-    <meta property="og:url" content="URL_DE_TU_PAGINA"/>
-    <meta property="og:type" content="website"/>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-size: 200% 200%;
-            transition: background-image 2s ease-in-out, background-color 2s ease-in-out;
-            min-height: 100vh;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carta para ti</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-transition: 1.6s;
+    }
 
-        input[type="radio"] {
-            display: none;
-        }
+    /* Importante: position relative para que ::after funcione */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-size: 200% 200%;
+      transition: background-image var(--bg-transition) ease-in-out, background-color var(--bg-transition) ease-in-out;
+      min-height: 100vh;
+      margin: 0;
+      position: relative; /* CORRECCIÓN */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        #step1-content, #step2-content, #step3-content {
-            display: none;
-        }
+    /* Visibilidad de pasos (inputs son hermanos de .container) */
+    input[type="radio"] { display: none; }
 
-        #step1:checked ~ .container #step1-content {
-            display: flex;
-        }
+    #step1-content { display: flex; flex-direction: column; align-items:center; }
+    #step2-content, #step3-content { display: none; }
 
-        #step2:checked ~ .container #step2-content {
-            display: flex;
-        }
+    /* reglas que activan las etapas */
+    #step2:checked ~ .container #step1-content { display: none; }
+    #step2:checked ~ .container #step2-content { display: flex; }
+    #step3:checked ~ .container #step1-content,
+    #step3:checked ~ .container #step2-content { display: none; }
+    #step3:checked ~ .container #step3-content { display: flex; animation: pop-in 0.9s ease-out forwards; flex-direction: column; align-items:center; }
 
-        #step3:checked ~ .container #step3-content {
-            display: flex;
-            animation: pop-in 1s ease-out forwards;
-        }
-        
-        @keyframes pop-in {
-            0% {
-                transform: scale(0) rotate(180deg);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
-        }
-        
-        .day-sky {
-            background-image: linear-gradient(135deg, #87CEEB, #B0E0E6, #FFD700);
-            animation: move-day-bg 20s ease-in-out infinite alternate;
-        }
+    @keyframes pop-in {
+      0% { transform: scale(0.85) rotate(6deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
 
-        @keyframes move-day-bg {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+    /* Fondos dinámicos */
+    .day-sky {
+      background-image: linear-gradient(135deg, #87CEEB, #B0E0E6 60%, #FFD700 100%);
+      animation: move-day-bg 20s ease-in-out infinite alternate;
+    }
+    @keyframes move-day-bg {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
 
-        .night-sky {
-            background-image: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            animation: twinkle 50s ease-in-out infinite alternate, move-night-bg 120s linear infinite;
-        }
-        .night-sky::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent url(https://www.transparenttextures.com/patterns/stardust.png) repeat;
-            animation: move-stars 120s linear infinite;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        @keyframes move-stars {
-            from { background-position: 0 0; }
-            to { background-position: 1000px 500px; }
-        }
-    </style>
+    .night-sky {
+      background-image: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      animation: twinkle 30s ease-in-out infinite alternate;
+    }
+    /* capa de estrellas usando pseudo-elemento del body (body tiene position:relative) */
+    body.night-sky::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+      opacity: 0.12;
+      mix-blend-mode: screen;
+      animation: move-stars 120s linear infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.88; } 50% { opacity: 1; }
+    }
+    @keyframes move-stars {
+      from { background-position: 0 0; } to { background-position: 1000px 500px; }
+    }
+
+    /* Ajustes para móviles sobre emoji grande */
+    .emoji-large { font-size: clamp(3.5rem, 9vw, 6rem); line-height:1; }
+
+    /* Tarjeta final */
+    .final-card {
+      background: linear-gradient(180deg, rgba(245,242,255,0.95), rgba(238,230,255,0.9));
+      border: 3px solid rgba(99,102,241,0.18);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.12);
+      max-width: 22rem;
+      text-align: center;
+    }
+
+    /* Botones (extra) */
+    .btn-main { padding: .65rem 1.6rem; border-radius: 999px; font-weight:700; }
+  </style>
 </head>
-<body class="h-screen flex justify-center items-center">
-    <!-- Radio buttons para controlar el flujo -->
-    <input type="radio" name="gift-steps" id="step1" checked>
-    <input type="radio" name="gift-steps" id="step2">
-    <input type="radio" name="gift-steps" id="step3">
+<body class="h-screen">
 
-    <div class="container flex justify-center items-center h-full w-full">
-        <div class="content flex flex-col items-center justify-center space-y-8">
+  <!-- pasos como inputs (sobresalen del container, siblings) -->
+  <input type="radio" name="gift-steps" id="step1" checked>
+  <input type="radio" name="gift-steps" id="step2">
+  <input type="radio" name="gift-steps" id="step3">
 
-            <!-- Etapa 1: Mensaje inicial y botón -->
-            <div id="step1-content" class="flex-col items-center justify-center space-y-8">
-                <div id="greeting-message" class="text-3xl font-semibold text-gray-800">
-                    Oye mira...
-                </div>
-                <div class="text-9xl animate-pulse transition-all duration-300">
-                    🎁
-                </div>
-                <label for="step2" class="px-8 py-3 bg-rose-500 text-white font-bold text-xl rounded-full shadow-lg cursor-pointer transition-all duration-300 hover:bg-rose-600 hover:scale-105 mt-8">
-                    Continuar
-                </label>
-            </div>
+  <main class="container flex justify-center items-center h-full w-full" role="main">
+    <div class="content flex flex-col items-center justify-center space-y-8">
 
-            <!-- Etapa 2: Mensaje de la carta y botón para abrir -->
-            <div id="step2-content" class="flex-col items-center justify-center space-y-8">
-                <div class="text-3xl font-semibold text-gray-800">
-                    Ha llegado esto para ti
-                </div>
-                <!-- Al hacer clic en la carta, se activa el paso 3 -->
-                <label for="step3" class="text-9xl cursor-pointer transition-all duration-300 hover:scale-110">
-                    💌
-                </label>
-                <div class="text-xl font-medium text-gray-700">
-                    Pulsa en la carta para abrir
-                </div>
-            </div>
+      <!-- Etapa 1 -->
+      <section id="step1-content" class="flex-col items-center justify-center space-y-6" aria-hidden="false">
+        <div id="greeting-message" class="text-3xl font-semibold text-gray-800" role="status" aria-live="polite">Oye mira...</div>
+        <div class="emoji-large animate-pulse">🎁</div>
+        <label for="step2" class="cursor-pointer inline-block bg-rose-500 text-white px-8 py-3 rounded-full shadow-lg hover:bg-rose-600 transition transform hover:scale-105 btn-main">
+          Continuar
+        </label>
+      </section>
 
-            <!-- Etapa 3: Carta final con el mensaje -->
-            <div id="step3-content" class="bg-purple-100 border-4 border-purple-800 p-8 rounded-2xl shadow-xl max-w-sm text-center flex-col items-center space-y-4">
-                <span id="final-message-text" class="text-4xl font-semibold text-gray-900 leading-tight">
-                    Cuidate✨
-                    <br>
-                    o si no
-                    <br>
-                    con quien
-                    <br>
-                    me voy a
-                    <br>
-                    casar
-                    <br>
-                    <span class="text-5xl">🐧❤️🐧</span>
-                </span>
-            </div>
+      <!-- Etapa 2 -->
+      <section id="step2-content" class="flex-col items-center justify-center space-y-6" aria-hidden="true">
+        <div class="text-3xl font-semibold text-gray-800">Ha llegado esto para ti</div>
+        <label for="step3" class="emoji-large cursor-pointer transition-transform hover:scale-110" aria-label="Abrir carta">💌</label>
+        <div class="text-lg font-medium text-gray-700">Pulsa en la carta para abrir</div>
+      </section>
+
+      <!-- Etapa 3 -->
+      <section id="step3-content" class="final-card" aria-hidden="true">
+        <div id="final-message-text" class="text-2xl font-semibold text-gray-900 leading-tight">
+          Cuídate✨
+          <br>o si no
+          <br>con quien
+          <br>me voy a
+          <br>casar
         </div>
+        <div class="text-4xl mt-2">🐧❤️🐧</div>
+        <button id="listen-btn" class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-full shadow hover:bg-indigo-700 btn-main" type="button">
+          Escuchar el mensaje ✨
+        </button>
+      </section>
+
     </div>
+  </main>
 
-    <script>
-        // Función para cambiar el fondo y el saludo según la hora del día
-        function setDailyMood() {
-            const body = document.body;
-            const greetingElement = document.getElementById('greeting-message');
-            const hour = new Date().getHours();
+  <script>
+    /*****************************************************************
+     * Lógica: saludo + fondo según hora
+     *****************************************************************/
+    function setDailyMood() {
+      const body = document.body;
+      const greetingElement = document.getElementById('greeting-message');
+      const hour = new Date().getHours();
 
-            // Asignar el fondo y el saludo de día o noche
-            if (hour >= 6 && hour < 19) {
-                // De 6 a.m. a 7 p.m.
-                body.classList.remove('night-sky');
-                body.classList.add('day-sky');
-                greetingElement.textContent = '¡Hola, buenos días!';
-            } else {
-                // De 7 p.m. a 6 a.m.
-                body.classList.remove('day-sky');
-                body.classList.add('night-sky');
-                greetingElement.textContent = '¡Hola, buenas noches!';
-            }
-        }
+      if (hour >= 6 && hour < 19) {
+        body.classList.remove('night-sky');
+        body.classList.add('day-sky');
+        greetingElement.textContent = '¡Hola, buenos días!';
+      } else {
+        body.classList.remove('day-sky');
+        body.classList.add('night-sky');
+        greetingElement.textContent = '¡Hola, buenas noches!';
+      }
+    }
+    setDailyMood();
+    // Actualiza saludo cada minuto por si el usuario deja la página abierta.
+    setInterval(setDailyMood, 60_000);
 
-        // Llamar a la función al cargar la página
-        setDailyMood();
-    </script>
+    /*****************************************************************
+     * TTS: fallback seguro con SpeechSynthesis del navegador.
+     * Si quieres integrar una TTS remota (API), hazlo en el servidor
+     * o usando fetch con CORS y luego reproducir el blob de audio.
+     *****************************************************************/
+    function speakFallback(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('Tu navegador no soporta SpeechSynthesis. No se puede reproducir el mensaje.');
+        return;
+      }
+      // configuraciones sencillas: voz, rate, pitch
+      const utter = new SpeechSynthesisUtterance(text);
+      // Opcional: elegir una voz en español si está disponible
+      const voices = window.speechSynthesis.getVoices();
+      const esVoice = voices.find(v => /es(-|$)/i.test(v.lang)) || voices.find(v => /Spanish/i.test(v.name));
+      if (esVoice) utter.voice = esVoice;
+      utter.rate = 0.95;
+      utter.pitch = 1.02;
+      window.speechSynthesis.cancel(); // limpiar cola
+      window.speechSynthesis.speak(utter);
+    }
+
+    // Handler del botón
+    document.getElementById('listen-btn').addEventListener('click', () => {
+      const text = document.getElementById('final-message-text').innerText;
+      // Si quieres usar una API TTS externa, aquí es donde harías la llamada fetch,
+      // descargarías el audio y lo reproducirías; por ahora usamos el fallback local.
+      speakFallback(text + ". Te quiero mucho.");
+    });
+
+    /*****************************************************************
+     * Notas para integración avanzada (si quieres):
+     * - Si quieres TTS remoto (p. ej. OpenAI/Google), haz la petición desde
+     *   tu backend (por seguridad de la API key) y devuelve un audio blob
+     *   al frontend para reproducirlo. Evitas problemas de CORS y de exponer keys.
+     * - Si deseas que el fondo cambie por clima real, usa Geolocation para
+     *   obtener lat/lon y llama a OpenWeatherMap (requiere API key).
+     *****************************************************************/
+  </script>
 </body>
 </html>
